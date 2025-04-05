@@ -37,3 +37,16 @@
 
 ---Represents the docs-lock.json file
 ---@alias LockTable table<string, RegisteryEntry>
+
+---@class TSNode
+---@field start function
+---@field end_ function
+---@field named_child function
+---@field parent function
+---@field type function
+---@field equal function
+---@field named_children function
+---@field next_named_sibling function
+
+---@class Picker
+---@field find function

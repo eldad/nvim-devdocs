@@ -232,6 +232,7 @@ M.render_cmd = function(bufnr, is_picker)
   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
   local chan = vim.api.nvim_open_term(bufnr, {})
   local args = is_picker and config.options.picker_cmd_args or config.options.cmd_args
+  ---@diagnostic disable-next-line: missing-fields
   local previewer = job:new({
     command = config.options.previewer_cmd,
     args = args,
