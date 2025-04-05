@@ -47,7 +47,7 @@ M.open_search = function(args, float)
     local search_text = args.fargs[1]
     local installed = list.get_installed_alias()
     local entries = list.get_doc_entries(installed)
-    pickers.open_picker(entries or {}, float, search_text)
+    pickers.open_picker(entries or {}, float, { default_text = search_text })
   end
 end
 

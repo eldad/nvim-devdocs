@@ -34,7 +34,7 @@ local metadata_previewer = previewers.new_buffer_previewer({
 ---@return Picker
 local function new_registery_picker(prompt, entries, on_attach)
   return pickers.new(plugin_config.options.telescope, {
-    prompt_title = prompt,
+    prompt_title = "DevDocs " .. prompt,
     finder = finders.new_table({
       results = entries,
       entry_maker = function(entry)
@@ -140,8 +140,10 @@ end
 
 ---@param entries DocEntry[]
 ---@param float? boolean
----@param default_text? string
-M.open_picker = function(entries, float, default_text)
+---@param opts? table
+M.open_picker = function(entries, float, opts)
+  opts = opts or {}
+
   local displayer = entry_display.create({
     separator = " ",
     items = {
@@ -151,12 +153,17 @@ M.open_picker = function(entries, float, default_text)
   })
 
   -- keywordprg provides an "escaped" string where space or tabs are converted to '\ '.
-  default_text = string.gsub(default_text or "", "\\ ", " ")
-  default_text = string.gsub(default_text, " +", " ")
+  local default_text = opts.default_text
+  if default_text then
+    default_text = string.gsub(default_text or "", "\\ ", " ")
+    default_text = string.gsub(default_text, " +", " ")
+  end
 
-  local picker = pickers.new(plugin_config.options.telescope, {
+  local prompt_title = opts.prompt_title or "DevDocs Search"
+
+  local picker = pickers.new(plugin_config.options.telescope or {}, {
     default_text = default_text,
-    prompt_title = "Select an entry",
+    prompt_title = prompt_title,
     finder = finders.new_table({
       results = entries,
       entry_maker = function(entry)
@@ -204,7 +211,7 @@ M.open_picker_alias = function(alias, float)
     log.error(alias .. " documentation is not installed")
   else
     plugin_state.set("current_doc", alias)
-    M.open_picker(entries, float)
+    M.open_picker(entries, float, { prompt_title = "DevDocs Search (" .. alias .. ")" })
   end
 end
 
