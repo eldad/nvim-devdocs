@@ -142,7 +142,8 @@ end
 
 ---@param entries DocEntry[]
 ---@param float? boolean
-M.open_picker = function(entries, float)
+---@param default_text? string
+M.open_picker = function(entries, float, default_text)
   local displayer = entry_display.create({
     separator = " ",
     items = {
@@ -152,6 +153,7 @@ M.open_picker = function(entries, float)
   })
 
   local picker = pickers.new(plugin_config.options.telescope, {
+    default_text = default_text,
     prompt_title = "Select an entry",
     finder = finders.new_table({
       results = entries,

@@ -40,6 +40,17 @@ M.open_doc = function(args, float)
   end
 end
 
+M.open_search = function(args, float)
+  if vim.tbl_isempty(args.fargs) then
+    log.warn("No search arg providered")
+  else
+    local search_text = args.fargs[1]
+    local installed = list.get_installed_alias()
+    local entries = list.get_doc_entries(installed)
+    pickers.open_picker(entries or {}, float, search_text)
+  end
+end
+
 M.open_doc_float = function(args) M.open_doc(args, true) end
 
 M.open_doc_current_file = function(float)
@@ -117,6 +128,7 @@ M.setup = function(opts)
   cmd("DevdocsInstall", M.install_doc, { nargs = "*", complete = completion.get_non_installed })
   cmd("DevdocsUninstall", M.uninstall_doc, { nargs = "*", complete = completion.get_installed })
   cmd("DevdocsOpen", M.open_doc, { nargs = "?", complete = completion.get_installed })
+  cmd("DevdocsSearch", M.open_search, { nargs = "?", complete = completion.get_installed })
   cmd("DevdocsOpenFloat", M.open_doc_float, { nargs = "?", complete = completion.get_installed })
   cmd("DevdocsOpenCurrent", function() M.open_doc_current_file() end, {})
   cmd("DevdocsOpenCurrentFloat", function() M.open_doc_current_file(true) end, {})
