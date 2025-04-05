@@ -53,7 +53,10 @@ end
 
 local doc_previewer = previewers.new_buffer_previewer({
   title = "Preview",
-  keep_last_buf = true,
+  --
+  -- This is buggy. When true this causes an invalid winoow ID with telescope, when a previous preview had content but current does not.
+  -- keep_last_buf = true,
+  --
   define_preview = function(self, entry)
     local bufnr = self.state.bufnr
 
@@ -71,14 +74,9 @@ local doc_previewer = previewers.new_buffer_previewer({
 })
 
 local function open_doc(selection, float)
-  local bufnr = state.get_global_key("last_preview_bufnr")
-  local picker_cmd = plugin_config.options.picker_cmd
-
-  if picker_cmd or not bufnr or not vim.api.nvim_buf_is_valid(bufnr) then
-    bufnr = vim.api.nvim_create_buf(false, true)
-    local lines = plugin_state.get("preview_lines") or operations.read_entry(selection.value)
-    vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
-  end
+  local bufnr = vim.api.nvim_create_buf(false, true)
+  local lines = plugin_state.get("preview_lines") or operations.read_entry(selection.value)
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
 
   plugin_state.set("last_mode", float and "float" or "normal")
   operations.open(selection.value, bufnr, float)
