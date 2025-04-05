@@ -150,6 +150,10 @@ M.open_picker = function(entries, float, default_text)
     },
   })
 
+  -- keywordprg provides an "escaped" string where space or tabs are converted to '\ '.
+  default_text = string.gsub(default_text or "", "\\ ", " ")
+  default_text = string.gsub(default_text, " +", " ")
+
   local picker = pickers.new(plugin_config.options.telescope, {
     default_text = default_text,
     prompt_title = "Select an entry",
