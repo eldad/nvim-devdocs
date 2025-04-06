@@ -3,7 +3,6 @@ local M = {}
 local finders = require("telescope.finders")
 local pickers = require("telescope.pickers")
 local previewers = require("telescope.previewers")
-local state = require("telescope.state")
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 local config = require("telescope.config").values
@@ -38,10 +37,11 @@ local function new_registery_picker(prompt, entries, on_attach)
     finder = finders.new_table({
       results = entries,
       entry_maker = function(entry)
+        local display = entry.name .. " [" .. entry.slug .. "]"
         return {
           value = entry,
-          display = entry.slug,
-          ordinal = entry.slug,
+          display = display,
+          ordinal = display,
         }
       end,
     }),
