@@ -37,11 +37,21 @@ local function new_registry_picker(prompt, entries, on_select)
     finder = finders.new_table({
       results = entries,
       entry_maker = function(entry)
-        local display = entry.name .. " [" .. entry.slug .. "]"
+        local entry_name = entry.name .. " [" .. entry.slug .. "]"
+        local display_name
+        if entry.installed then
+          if entry.has_update then
+            display_name = entry_name .. " <Update Available>"
+          else
+            display_name = entry_name .. " <Installed>"
+          end
+        else
+          display_name = entry_name
+        end
         return {
           value = entry,
-          display = display,
-          ordinal = display,
+          display = display_name,
+          ordinal = entry_name,
         }
       end,
     }),
