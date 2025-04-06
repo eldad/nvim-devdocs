@@ -28,10 +28,10 @@ local metadata_previewer = previewers.new_buffer_previewer({
 })
 
 ---@param prompt string
----@param entries RegisteryEntry[]
+---@param entries RegistryEntry[]
 ---@param on_attach function
 ---@return Picker
-local function new_registery_picker(prompt, entries, on_attach)
+local function new_registry_picker(prompt, entries, on_attach)
   return pickers.new(plugin_config.options.telescope, {
     prompt_title = "DevDocs " .. prompt,
     finder = finders.new_table({
@@ -83,11 +83,11 @@ local function open_doc(selection, float)
 end
 
 M.installation_picker = function()
-  local non_installed = list.get_non_installed_registery()
+  local non_installed = list.get_non_installed_registry()
 
   if not non_installed then return end
 
-  local picker = new_registery_picker("Install documentation", non_installed, function()
+  local picker = new_registry_picker("Install documentation", non_installed, function()
     actions.select_default:replace(function(prompt_bufnr)
       local selection = action_state.get_selected_entry()
 
@@ -101,11 +101,11 @@ M.installation_picker = function()
 end
 
 M.uninstallation_picker = function()
-  local installed = list.get_installed_registery()
+  local installed = list.get_installed_registry()
 
   if not installed then return end
 
-  local picker = new_registery_picker("Uninstall documentation", installed, function()
+  local picker = new_registry_picker("Uninstall documentation", installed, function()
     actions.select_default:replace(function(prompt_bufnr)
       local selection = action_state.get_selected_entry()
       local slug = selection.value.slug
@@ -120,11 +120,11 @@ M.uninstallation_picker = function()
 end
 
 M.update_picker = function()
-  local updatable = list.get_updatable_registery()
+  local updatable = list.get_updatable_registry()
 
   if not updatable then return end
 
-  local picker = new_registery_picker("Update documentation", updatable, function()
+  local picker = new_registry_picker("Update documentation", updatable, function()
     actions.select_default:replace(function(prompt_bufnr)
       local selection = action_state.get_selected_entry()
       local slug = selection.value.slug

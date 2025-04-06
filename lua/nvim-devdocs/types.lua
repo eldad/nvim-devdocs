@@ -1,6 +1,6 @@
----Represents an entry in the Devdocs registery
+---Represents an entry in the Devdocs registry
 ---@see https://devdocs.io/docs.json
----@class RegisteryEntry
+---@class RegistryEntry
 ---@field name string
 ---@field slug string
 ---@field type string
@@ -36,7 +36,7 @@
 ---@alias IndexTable table<string, DocIndex>
 
 ---Represents the docs-lock.json file
----@alias LockTable table<string, RegisteryEntry>
+---@alias LockTable table<string, RegistryEntry>
 
 ---@class TSNode
 ---@field start function

@@ -9,7 +9,7 @@ local config = require("nvim-devdocs.config")
 local completion = require("nvim-devdocs.completion")
 local filetypes = require("nvim-devdocs.filetypes")
 
-M.fetch_registery = operations.fetch
+M.fetch_registry = operations.fetch
 
 M.install_doc = function(args)
   if vim.tbl_isempty(args.fargs) then
@@ -124,7 +124,7 @@ M.setup = function(opts)
 
   local cmd = vim.api.nvim_create_user_command
 
-  cmd("DevdocsFetch", M.fetch_registery, {})
+  cmd("DevdocsFetch", M.fetch_registry, {})
   cmd("DevdocsInstall", M.install_doc, { nargs = "*", complete = completion.get_non_installed })
   cmd("DevdocsUninstall", M.uninstall_doc, { nargs = "*", complete = completion.get_installed })
   cmd("DevdocsOpen", M.open_doc, { nargs = "?", complete = completion.get_installed })

@@ -4,7 +4,7 @@ local fs = require("nvim-devdocs.fs")
 local log = require("nvim-devdocs.log")
 local transpiler = require("nvim-devdocs.transpiler")
 
----@param entry RegisteryEntry
+---@param entry RegistryEntry
 ---@param doc_index DocIndex
 ---@param docs table<string, string>
 M.build_docs = function(entry, doc_index, docs)

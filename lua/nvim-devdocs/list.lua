@@ -14,12 +14,12 @@ end
 ---@return string[]
 M.get_non_installed_alias = function()
   local results = {}
-  local registery = fs.read_registery()
+  local registry = fs.read_registry()
   local installed = M.get_installed_alias()
 
-  if not registery then return {} end
+  if not registry then return {} end
 
-  for _, entry in pairs(registery) do
+  for _, entry in pairs(registry) do
     if not vim.tbl_contains(installed, entry.slug) then table.insert(results, entry.slug) end
   end
 
@@ -61,46 +61,46 @@ M.get_doc_entries = function(aliases)
 end
 
 ---@param predicate function
----@return RegisteryEntry[]?
-local function get_registery_entry(predicate)
-  local registery = fs.read_registery()
+---@return RegistryEntry[]?
+local function get_registry_entry(predicate)
+  local registry = fs.read_registry()
 
-  if not registery then
-    log.error("DevDocs registery not found, please run :DevdocsFetch")
+  if not registry then
+    log.error("DevDocs registry not found, please run :DevdocsFetch")
     return
   end
 
-  return vim.tbl_filter(predicate, registery)
+  return vim.tbl_filter(predicate, registry)
 end
 
-M.get_installed_registery = function()
+M.get_installed_registry = function()
   local installed = M.get_installed_alias()
   local predicate = function(entry) return vim.tbl_contains(installed, entry.slug) end
-  return get_registery_entry(predicate)
+  return get_registry_entry(predicate)
 end
 
-M.get_non_installed_registery = function()
+M.get_non_installed_registry = function()
   local installed = M.get_installed_alias()
   local predicate = function(entry) return not vim.tbl_contains(installed, entry.slug) end
-  return get_registery_entry(predicate)
+  return get_registry_entry(predicate)
 end
 
-M.get_updatable_registery = function()
+M.get_updatable_registry = function()
   local updatable = M.get_updatable()
   local predicate = function(entry) return vim.tbl_contains(updatable, entry.slug) end
-  return get_registery_entry(predicate)
+  return get_registry_entry(predicate)
 end
 
 ---@return string[]
 M.get_updatable = function()
   local results = {}
-  local registery = fs.read_registery()
+  local registry = fs.read_registry()
   local lockfile = fs.read_lockfile()
 
-  if not registery or not lockfile then return {} end
+  if not registry or not lockfile then return {} end
 
   for alias, value in pairs(lockfile) do
-    for _, doc in pairs(registery) do
+    for _, doc in pairs(registry) do
       if doc.slug == value.slug and doc.mtime > value.mtime then
         table.insert(results, alias)
         break
@@ -115,7 +115,7 @@ end
 ---@return string[]
 M.get_doc_variants = function(name)
   local variants = {}
-  local entries = fs.read_registery()
+  local entries = fs.read_registry()
 
   if not entries then return {} end
 

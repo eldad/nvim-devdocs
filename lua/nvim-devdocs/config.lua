@@ -37,7 +37,7 @@ M.setup = function(new_config)
   DOCS_DIR = DATA_DIR:joinpath("docs")
   INDEX_PATH = DATA_DIR:joinpath("index.json")
   LOCK_PATH = DATA_DIR:joinpath("docs-lock.json")
-  REGISTERY_PATH = DATA_DIR:joinpath("registery.json")
+  REGISTRY_PATH = DATA_DIR:joinpath("registry.json")
 
   return default
 end

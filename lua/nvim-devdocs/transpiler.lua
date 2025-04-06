@@ -514,8 +514,8 @@ function transpiler:eval_table(node)
   return result
 end
 
----Converts a `RegisteryEntry` to yaml
----@param entry RegisteryEntry
+---Converts a `RegistryEntry` to yaml
+---@param entry RegistryEntry
 ---@return string
 M.to_yaml = function(entry)
   local lines = {}

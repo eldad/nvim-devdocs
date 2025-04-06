@@ -1,7 +1,7 @@
 local M = {}
 
----@param registery string
-M.write_registery = function(registery) REGISTERY_PATH:write(registery, "w") end
+---@param registry string
+M.write_registry = function(registry) REGISTRY_PATH:write(registry, "w") end
 
 ---@param index IndexTable
 M.write_index = function(index)
@@ -15,10 +15,10 @@ M.write_lockfile = function(lockfile)
   LOCK_PATH:write(encoded, "w")
 end
 
----@return RegisteryEntry[]?
-M.read_registery = function()
-  if not REGISTERY_PATH:exists() then return end
-  local buf = REGISTERY_PATH:read()
+---@return RegistryEntry[]?
+M.read_registry = function()
+  if not REGISTRY_PATH:exists() then return end
+  local buf = REGISTRY_PATH:read()
   return vim.fn.json_decode(buf)
 end
 

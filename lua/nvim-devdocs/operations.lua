@@ -15,7 +15,7 @@ local devdocs_site_url = "https://devdocs.io"
 local devdocs_cdn_url = "https://documents.devdocs.io"
 
 M.fetch = function()
-  log.info("Fetching DevDocs registery...")
+  log.info("Fetching DevDocs registry...")
 
   curl.get(devdocs_site_url .. "/docs.json", {
     headers = {
@@ -26,21 +26,21 @@ M.fetch = function()
         log.debug("Docs directory not found, creating a new directory")
         DATA_DIR:mkdir()
       end
-      fs.write_registery(response.body)
-      log.info("DevDocs registery has been written to the disk")
+      fs.write_registry(response.body)
+      log.info("DevDocs registry has been written to the disk")
     end,
     on_error = function(error)
-      log.error("Error when fetching registery, exit code: " .. error.exit)
+      log.error("Error when fetching registry, exit code: " .. error.exit)
     end,
   })
 end
 
----@param entry RegisteryEntry
+---@param entry RegistryEntry
 ---@param verbose? boolean
 ---@param is_update? boolean
 M.install = function(entry, verbose, is_update)
-  if not REGISTERY_PATH:exists() then
-    if verbose then log.error("DevDocs registery not found, please run :DevdocsFetch") end
+  if not REGISTRY_PATH:exists() then
+    if verbose then log.error("DevDocs registry not found, please run :DevdocsFetch") end
     return
   end
 
@@ -98,17 +98,17 @@ end
 ---@param is_update? boolean
 M.install_args = function(args, verbose, is_update)
   local updatable = list.get_updatable()
-  local registery = fs.read_registery()
+  local registry = fs.read_registry()
 
-  if not registery then
-    if verbose then log.error("DevDocs registery not found, please run :DevdocsFetch") end
+  if not registry then
+    if verbose then log.error("DevDocs registry not found, please run :DevdocsFetch") end
     return
   end
 
   for _, slug in ipairs(args) do
     local data = {}
 
-    for _, entry in ipairs(registery) do
+    for _, entry in ipairs(registry) do
       if entry.slug == slug then
         data = entry
         break
