@@ -528,7 +528,7 @@ M.to_yaml = function(entry)
       value = value:gsub("\n *", " ")
     end
     if key == "links" then value = vim.fn.json_encode(value) end
-    if value ~= vim.NIL then table.insert(lines, key .. ": " .. value) end
+    if value ~= vim.NIL then table.insert(lines, key .. ": " .. tostring(value)) end
   end
 
   return table.concat(lines, "\n")

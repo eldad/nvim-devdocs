@@ -3,6 +3,30 @@ local M = {}
 local fs = require("nvim-devdocs.fs")
 local log = require("nvim-devdocs.log")
 
+M.get_registry = function()
+  local registry = fs.read_registry()
+
+  if not registry then
+    log.error("DevDocs registry not found, please run :DevdocsFetch")
+    return
+  end
+
+  local lockfile = fs.read_lockfile() or {}
+  local installed = vim.tbl_keys(lockfile)
+
+  for _, entry in pairs(registry) do
+    local is_installed = vim.tbl_contains(installed, entry.slug)
+    if is_installed then
+      local lockfile_entry = vim.tbl_get(lockfile, entry.slug)
+      local has_update = entry.mtime > lockfile_entry.mtime
+      entry.has_update = has_update
+    end
+    entry.installed = is_installed
+  end
+
+  return registry
+end
+
 ---@return string[]
 M.get_installed_alias = function()
   local lockfile = fs.read_lockfile() or {}
@@ -99,9 +123,9 @@ M.get_updatable = function()
 
   if not registry or not lockfile then return {} end
 
-  for alias, value in pairs(lockfile) do
+  for alias, lockfile_entry in pairs(lockfile) do
     for _, doc in pairs(registry) do
-      if doc.slug == value.slug and doc.mtime > value.mtime then
+      if doc.slug == lockfile_entry.slug and doc.mtime > lockfile_entry.mtime then
         table.insert(results, alias)
         break
       end

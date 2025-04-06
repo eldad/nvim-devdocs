@@ -29,9 +29,9 @@ local metadata_previewer = previewers.new_buffer_previewer({
 
 ---@param prompt string
 ---@param entries RegistryEntry[]
----@param on_attach function
+---@param on_select function
 ---@return Picker
-local function new_registry_picker(prompt, entries, on_attach)
+local function new_registry_picker(prompt, entries, on_select)
   return pickers.new(plugin_config.options.telescope, {
     prompt_title = "DevDocs " .. prompt,
     finder = finders.new_table({
@@ -47,7 +47,15 @@ local function new_registry_picker(prompt, entries, on_attach)
     }),
     sorter = config.generic_sorter(plugin_config.options.telescope),
     previewer = metadata_previewer,
-    attach_mappings = on_attach,
+    attach_mappings = function()
+      actions.select_default:replace(function(prompt_bufnr)
+        local selection = action_state.get_selected_entry()
+
+        actions.close(prompt_bufnr)
+        on_select(selection.value)
+      end)
+      return true
+    end,
   })
 end
 
@@ -83,19 +91,18 @@ local function open_doc(selection, float)
 end
 
 M.installation_picker = function()
-  local non_installed = list.get_non_installed_registry()
+  local registry = list.get_registry()
 
-  if not non_installed then return end
+  if not registry then
+    log.error("Registry is nil")
+    return
+  end
 
-  local picker = new_registry_picker("Install documentation", non_installed, function()
-    actions.select_default:replace(function(prompt_bufnr)
-      local selection = action_state.get_selected_entry()
-
-      actions.close(prompt_bufnr)
-      operations.install(selection.value)
-    end)
-    return true
-  end)
+  local picker = new_registry_picker(
+    "Install documentation",
+    registry,
+    function(value) operations.install(value) end
+  )
 
   picker:find()
 end
@@ -103,18 +110,16 @@ end
 M.uninstallation_picker = function()
   local installed = list.get_installed_registry()
 
-  if not installed then return end
+  if not installed then
+    log.warn("No installed datasets, nothing to uninstall")
+    return
+  end
 
-  local picker = new_registry_picker("Uninstall documentation", installed, function()
-    actions.select_default:replace(function(prompt_bufnr)
-      local selection = action_state.get_selected_entry()
-      local slug = selection.value.slug
-
-      actions.close(prompt_bufnr)
-      operations.uninstall(slug)
-    end)
-    return true
-  end)
+  local picker = new_registry_picker(
+    "Uninstall documentation",
+    installed,
+    function(value) operations.uninstall(value) end
+  )
 
   picker:find()
 end
@@ -122,18 +127,16 @@ end
 M.update_picker = function()
   local updatable = list.get_updatable_registry()
 
-  if not updatable then return end
+  if not updatable or vim.tbl_isempty(updatable) then
+    log.warn("Nothing to update")
+    return
+  end
 
-  local picker = new_registry_picker("Update documentation", updatable, function()
-    actions.select_default:replace(function(prompt_bufnr)
-      local selection = action_state.get_selected_entry()
-      local slug = selection.value.slug
-
-      actions.close(prompt_bufnr)
-      operations.install(slug, true, true)
-    end)
-    return true
-  end)
+  local picker = new_registry_picker(
+    "Update documentation",
+    updatable,
+    function(value) operations.install(value, true, true) end
+  )
 
   picker:find()
 end
