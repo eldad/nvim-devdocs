@@ -103,12 +103,6 @@ M.get_installed_registry = function()
   return get_registry_entry(predicate)
 end
 
-M.get_non_installed_registry = function()
-  local installed = M.get_installed_alias()
-  local predicate = function(entry) return not vim.tbl_contains(installed, entry.slug) end
-  return get_registry_entry(predicate)
-end
-
 M.get_updatable_registry = function()
   local updatable = M.get_updatable()
   local predicate = function(entry) return vim.tbl_contains(updatable, entry.slug) end
