@@ -20,8 +20,7 @@ M.get_non_installed_alias = function()
   if not registery then return {} end
 
   for _, entry in pairs(registery) do
-    local alias = entry.slug:gsub("~", "-")
-    if not vim.tbl_contains(installed, alias) then table.insert(results, alias) end
+    if not vim.tbl_contains(installed, entry.slug) then table.insert(results, entry.slug) end
   end
 
   return results
@@ -76,28 +75,19 @@ end
 
 M.get_installed_registery = function()
   local installed = M.get_installed_alias()
-  local predicate = function(entry)
-    local alias = entry.slug:gsub("~", "-")
-    return vim.tbl_contains(installed, alias)
-  end
+  local predicate = function(entry) return vim.tbl_contains(installed, entry.slug) end
   return get_registery_entry(predicate)
 end
 
 M.get_non_installed_registery = function()
   local installed = M.get_installed_alias()
-  local predicate = function(entry)
-    local alias = entry.slug:gsub("~", "-")
-    return not vim.tbl_contains(installed, alias)
-  end
+  local predicate = function(entry) return not vim.tbl_contains(installed, entry.slug) end
   return get_registery_entry(predicate)
 end
 
 M.get_updatable_registery = function()
   local updatable = M.get_updatable()
-  local predicate = function(entry)
-    local alias = entry.slug:gsub("~", "-")
-    return vim.tbl_contains(updatable, alias)
-  end
+  local predicate = function(entry) return vim.tbl_contains(updatable, entry.slug) end
   return get_registery_entry(predicate)
 end
 
@@ -130,10 +120,7 @@ M.get_doc_variants = function(name)
   if not entries then return {} end
 
   for _, entry in pairs(entries) do
-    if vim.startswith(entry.slug, name) then
-      local alias = entry.slug:gsub("~", "-")
-      table.insert(variants, alias)
-    end
+    if vim.startswith(entry.slug, name) then table.insert(variants, entry.slug) end
   end
 
   return variants

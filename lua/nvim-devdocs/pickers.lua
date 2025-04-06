@@ -40,8 +40,8 @@ local function new_registery_picker(prompt, entries, on_attach)
       entry_maker = function(entry)
         return {
           value = entry,
-          display = entry.slug:gsub("~", "-"),
-          ordinal = entry.slug:gsub("~", "-"),
+          display = entry.slug,
+          ordinal = entry.slug,
         }
       end,
     }),
@@ -108,10 +108,10 @@ M.uninstallation_picker = function()
   local picker = new_registery_picker("Uninstall documentation", installed, function()
     actions.select_default:replace(function(prompt_bufnr)
       local selection = action_state.get_selected_entry()
-      local alias = selection.value.slug:gsub("~", "-")
+      local slug = selection.value.slug
 
       actions.close(prompt_bufnr)
-      operations.uninstall(alias)
+      operations.uninstall(slug)
     end)
     return true
   end)
@@ -127,10 +127,10 @@ M.update_picker = function()
   local picker = new_registery_picker("Update documentation", updatable, function()
     actions.select_default:replace(function(prompt_bufnr)
       local selection = action_state.get_selected_entry()
-      local alias = selection.value.slug:gsub("~", "-")
+      local slug = selection.value.slug
 
       actions.close(prompt_bufnr)
-      operations.install(alias, true, true)
+      operations.install(slug, true, true)
     end)
     return true
   end)

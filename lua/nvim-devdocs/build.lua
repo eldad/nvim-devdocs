@@ -8,10 +8,10 @@ local transpiler = require("nvim-devdocs.transpiler")
 ---@param doc_index DocIndex
 ---@param docs table<string, string>
 M.build_docs = function(entry, doc_index, docs)
-  local alias = entry.slug:gsub("~", "-")
-  local current_doc_dir = DOCS_DIR:joinpath(alias)
+  local slug = entry.slug
+  local current_doc_dir = DOCS_DIR:joinpath(slug)
 
-  log.info("Building " .. alias .. " documentation...")
+  log.info("Building " .. slug .. " documentation...")
 
   if not DOCS_DIR:exists() then DOCS_DIR:mkdir() end
   if not current_doc_dir:exists() then current_doc_dir:mkdir() end
@@ -84,8 +84,8 @@ M.build_docs = function(entry, doc_index, docs)
     doc_index.entries[i].path = path_map[index_entry.path] or path_map[main]
   end
 
-  index[alias] = doc_index
-  lockfile[alias] = entry
+  index[slug] = doc_index
+  lockfile[slug] = entry
 
   fs.write_index(index)
   fs.write_lockfile(lockfile)

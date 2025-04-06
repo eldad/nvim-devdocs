@@ -10,7 +10,7 @@ local mappings = {
   open_in_browser = {
     desc = "Open in the browser",
     handler = function(entry)
-      local slug = entry.alias:gsub("-", "~")
+      local slug = entry.alias
       vim.ui.open("https://devdocs.io/" .. slug .. "/" .. entry.link)
     end,
   },

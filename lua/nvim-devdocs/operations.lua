@@ -44,17 +44,17 @@ M.install = function(entry, verbose, is_update)
     return
   end
 
-  local alias = entry.slug:gsub("~", "-")
+  local slug = entry.slug
   local installed = list.get_installed_alias()
-  local is_installed = vim.tbl_contains(installed, alias)
+  local is_installed = vim.tbl_contains(installed, slug)
 
   if not is_update and is_installed then
-    if verbose then log.warn("Documentation for " .. alias .. " is already installed") end
+    if verbose then log.warn("Documentation for " .. slug .. " is already installed") end
   else
     local ui = vim.api.nvim_list_uis()
 
     if ui[1] and entry.db_size > 10000000 then
-      log.debug(string.format("%s docs is too large (%s)", alias, entry.db_size))
+      log.debug(string.format("%s docs is too large (%s)", slug, entry.db_size))
 
       local input = vim.fn.input({
         prompt = "Building large docs can freeze neovim, continue? y/n ",
@@ -66,28 +66,28 @@ M.install = function(entry, verbose, is_update)
     local callback = function(index)
       local doc_url = string.format("%s/%s/db.json?%s", devdocs_cdn_url, entry.slug, entry.mtime)
 
-      log.info("Downloading " .. alias .. " documentation...")
+      log.info("Downloading " .. slug .. " documentation...")
       curl.get(doc_url, {
         callback = vim.schedule_wrap(function(response)
           local docs = vim.fn.json_decode(response.body)
           build.build_docs(entry, index, docs)
         end),
         on_error = function(error)
-          log.error("(" .. alias .. ") Error during download, exit code: " .. error.exit)
+          log.error("(" .. slug .. ") Error during download, exit code: " .. error.exit)
         end,
       })
     end
 
     local index_url = string.format("%s/%s/index.json?%s", devdocs_cdn_url, entry.slug, entry.mtime)
 
-    log.info("Fetching " .. alias .. " documentation entries...")
+    log.info("Fetching " .. slug .. " documentation entries...")
     curl.get(index_url, {
       callback = vim.schedule_wrap(function(response)
         local index = vim.fn.json_decode(response.body)
         callback(index)
       end),
       on_error = function(error)
-        log.error("(" .. alias .. ") Error during download, exit code: " .. error.exit)
+        log.error("(" .. slug .. ") Error during download, exit code: " .. error.exit)
       end,
     })
   end
@@ -105,8 +105,7 @@ M.install_args = function(args, verbose, is_update)
     return
   end
 
-  for _, arg in ipairs(args) do
-    local slug = arg:gsub("-", "~")
+  for _, slug in ipairs(args) do
     local data = {}
 
     for _, entry in ipairs(registery) do
