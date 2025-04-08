@@ -8,6 +8,7 @@ local M = {
   yaml = "ansible",
   javascriptreact = { "javascript", "react" },
   typescriptreact = { "typescript", "react" },
+  sql = { "postgresql" },
 }
 
 return M
