@@ -123,7 +123,7 @@ M.uninstall = function(alias)
   local installed = list.get_installed_alias()
 
   if not vim.tbl_contains(installed, alias) then
-    log.info(alias .. " documentation is already uninstalled")
+    log.warn(alias .. " documentation is not installed")
   else
     local index = fs.read_index()
     local lockfile = fs.read_lockfile()

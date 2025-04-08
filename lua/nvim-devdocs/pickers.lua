@@ -119,6 +119,54 @@ M.installation_picker = function()
   picker:find()
 end
 
+M.installation_latest_picker = function()
+  local registry = list.get_registry()
+
+  if not registry then
+    log.error("Registry is nil")
+    return
+  end
+
+  local filtered_registry = {}
+  for _, entry in ipairs(registry) do
+    local current = vim.tbl_get(filtered_registry, entry.name)
+    if not current then
+      entry.versions = { entry.version }
+      filtered_registry[entry.name] = entry
+    else
+      local versions = current.versions
+      table.insert(versions, entry.version)
+      -- nil version usually means the unified dataset
+      if entry.version ~= nil and entry.version > current.version then
+        --
+        entry.versions = versions
+        filtered_registry[entry.name] = entry
+      end
+    end
+  end
+
+  -- picker uses ipair to iterate, covert to array
+  local iregistry = {}
+  for _, entry in pairs(filtered_registry) do
+    local versions = vim.tbl_filter(
+      function(v) return v ~= nil and v ~= entry.version end,
+      entry.versions
+    )
+    entry.versions = table.concat(versions, ", ")
+    table.insert(iregistry, entry)
+  end
+
+  local picker = new_registry_picker("Install documentation", iregistry, function(entry)
+    if entry.installed and not entry.has_update then
+      log.warn(entry.slug .. ": documentation is already installed and up to date")
+    else
+      operations.install(entry)
+    end
+  end)
+
+  picker:find()
+end
+
 M.uninstallation_picker = function()
   local installed = list.get_installed_registry()
 

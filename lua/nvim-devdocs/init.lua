@@ -19,6 +19,8 @@ M.install_doc = function(args)
   end
 end
 
+M.install_doc_latest = function() pickers.installation_latest_picker() end
+
 M.uninstall_doc = function(args)
   if vim.tbl_isempty(args.fargs) then pickers.uninstallation_picker() end
 
@@ -121,6 +123,7 @@ M.setup = function(opts)
 
   cmd("DevdocsFetch", M.fetch_registry, {})
   cmd("DevdocsInstall", M.install_doc, { nargs = "*", complete = completion.get_all })
+  cmd("DevdocsInstallLatest", M.install_doc_latest, { nargs = "*", complete = completion.get_all })
   cmd("DevdocsUninstall", M.uninstall_doc, { nargs = "*", complete = completion.get_installed })
   cmd("DevdocsOpen", M.open_doc, { nargs = "?", complete = completion.get_installed })
   cmd("DevdocsSearch", M.open_search, { nargs = "?", complete = completion.get_installed })
