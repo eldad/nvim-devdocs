@@ -14,6 +14,7 @@ local operations = require("nvim-devdocs.operations")
 local transpiler = require("nvim-devdocs.transpiler")
 local plugin_state = require("nvim-devdocs.state")
 local plugin_config = require("nvim-devdocs.config")
+local semver = require("nvim-devdocs.semver")
 
 local metadata_previewer = previewers.new_buffer_previewer({
   title = "Metadata",
@@ -137,7 +138,7 @@ M.installation_latest_picker = function()
       local versions = current.versions
       table.insert(versions, entry.version)
       -- nil version usually means the unified dataset
-      if entry.version ~= nil and entry.version > current.version then
+      if entry.version ~= nil and semver.gt(entry.version, current.version) then
         --
         entry.versions = versions
         filtered_registry[entry.name] = entry
