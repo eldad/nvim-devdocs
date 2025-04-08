@@ -269,7 +269,14 @@ M.open = function(entry, bufnr, mode)
     vim.api.nvim_set_current_buf(bufnr)
   else
     -- TODO: add split configuration to plugin settings
-    vim.api.nvim_open_win(bufnr, true, { split = "right", win = 0 })
+    local last_win = state.get("last_win")
+
+    if last_win and vim.api.nvim_win_is_valid(last_win) then
+      vim.api.nvim_win_set_buf(last_win, bufnr)
+    else
+      local winnr = vim.api.nvim_open_win(bufnr, true, { split = "right", win = 0 })
+      state.set("last_win", winnr)
+    end
   end
 
   local ignore = vim.tbl_contains(config.options.cmd_ignore, entry.alias)
