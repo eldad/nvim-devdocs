@@ -3,7 +3,7 @@ local M = {}
 local fs = require("nvim-devdocs.fs")
 local log = require("nvim-devdocs.log")
 
-M.get_registry = function()
+M.get_registry = function(named)
   local registry = fs.read_registry()
 
   if not registry then
@@ -14,6 +14,8 @@ M.get_registry = function()
   local lockfile = fs.read_lockfile() or {}
   local installed = vim.tbl_keys(lockfile)
 
+  local named_registry = {}
+
   for _, entry in pairs(registry) do
     local is_installed = vim.tbl_contains(installed, entry.slug)
     if is_installed then
@@ -22,9 +24,15 @@ M.get_registry = function()
       entry.has_update = has_update
     end
     entry.installed = is_installed
+
+    if named then named_registry[entry.slug] = entry end
   end
 
-  return registry
+  if named then
+    return named_registry
+  else
+    return registry
+  end
 end
 
 ---@return string[]
@@ -36,17 +44,12 @@ M.get_installed_alias = function()
 end
 
 ---@return string[]
-M.get_non_installed_alias = function()
+M.get_all_alias = function()
   local results = {}
-  local registry = fs.read_registry()
-  local installed = M.get_installed_alias()
-
-  if not registry then return {} end
-
+  local registry = fs.read_registry() or {}
   for _, entry in pairs(registry) do
-    if not vim.tbl_contains(installed, entry.slug) then table.insert(results, entry.slug) end
+    table.insert(results, entry.slug)
   end
-
   return results
 end
 
@@ -103,30 +106,17 @@ M.get_installed_registry = function()
   return get_registry_entry(predicate)
 end
 
-M.get_updatable_registry = function()
-  local updatable = M.get_updatable()
-  local predicate = function(entry) return vim.tbl_contains(updatable, entry.slug) end
-  return get_registry_entry(predicate)
-end
-
 ---@return string[]
-M.get_updatable = function()
-  local results = {}
-  local registry = fs.read_registry()
-  local lockfile = fs.read_lockfile()
+M.get_updatable_registry = function()
+  local registry = M.get_registry()
 
-  if not registry or not lockfile then return {} end
-
-  for alias, lockfile_entry in pairs(lockfile) do
-    for _, doc in pairs(registry) do
-      if doc.slug == lockfile_entry.slug and doc.mtime > lockfile_entry.mtime then
-        table.insert(results, alias)
-        break
-      end
-    end
+  if not registry then
+    log.error("Registry nil")
+    return {}
   end
 
-  return results
+  local predicate = function(entry) return entry.installed and entry.has_update end
+  return vim.tbl_filter(predicate, registry)
 end
 
 ---@param name string

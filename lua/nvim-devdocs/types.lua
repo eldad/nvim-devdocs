@@ -10,6 +10,9 @@
 ---@field db_size number
 ---@field links? table<string, string>
 ---@field attribution string
+---Extra fields
+---@field installed boolean
+---@field has_update boolean
 
 ---Represents an entry in the index.json file
 ---NOTE: alias and next_path are filled at runtime

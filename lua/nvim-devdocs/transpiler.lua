@@ -129,6 +129,7 @@ function transpiler:new(source, section_map)
     section_map = section_map or {},
     sections = {},
   }
+  ---@diagnostic disable-next-line: undefined-field
   new.parser:parse()
   self.__index = self
 

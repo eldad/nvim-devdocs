@@ -25,6 +25,8 @@ local default = {
   },
   ---@diagnostic disable-next-line: unused-local
   after_open = function(bufnr) end,
+  debug = false,
+  auto_install_on_startup = false,
 }
 
 ---@class nvim_devdocs.Config

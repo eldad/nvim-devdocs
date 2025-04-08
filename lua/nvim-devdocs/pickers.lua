@@ -108,11 +108,13 @@ M.installation_picker = function()
     return
   end
 
-  local picker = new_registry_picker(
-    "Install documentation",
-    registry,
-    function(value) operations.install(value) end
-  )
+  local picker = new_registry_picker("Install documentation", registry, function(entry)
+    if entry.installed and not entry.has_update then
+      log.warn(entry.slug .. ": documentation is already installed and up to date")
+    else
+      operations.install(entry)
+    end
+  end)
 
   picker:find()
 end
@@ -128,24 +130,7 @@ M.uninstallation_picker = function()
   local picker = new_registry_picker(
     "Uninstall documentation",
     installed,
-    function(value) operations.uninstall(value) end
-  )
-
-  picker:find()
-end
-
-M.update_picker = function()
-  local updatable = list.get_updatable_registry()
-
-  if not updatable or vim.tbl_isempty(updatable) then
-    log.warn("Nothing to update")
-    return
-  end
-
-  local picker = new_registry_picker(
-    "Update documentation",
-    updatable,
-    function(value) operations.install(value, true, true) end
+    function(entry) operations.uninstall(entry.slug) end
   )
 
   picker:find()

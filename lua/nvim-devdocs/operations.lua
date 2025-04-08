@@ -29,19 +29,15 @@ M.fetch = function()
       fs.write_registry(response.body)
       log.info("DevDocs registry has been written to the disk")
     end,
-    on_error = function(error)
-      log.error("Error when fetching registry, exit code: " .. error.exit)
-    end,
+    on_error = function(error) log.error("Error when fetching registry, exit code: " .. error.exit) end,
   })
 end
 
 ---@param entry RegistryEntry
----@param verbose? boolean
 ---@param is_update? boolean
-M.install = function(entry, verbose, is_update)
+M.install = function(entry, is_update)
   if not REGISTRY_PATH:exists() then
-    if verbose then log.error("DevDocs registry not found, please run :DevdocsFetch") end
-    return
+    log.error("DevDocs registry not found, please run :DevdocsFetch")
   end
 
   local slug = entry.slug
@@ -49,7 +45,7 @@ M.install = function(entry, verbose, is_update)
   local is_installed = vim.tbl_contains(installed, slug)
 
   if not is_update and is_installed then
-    if verbose then log.warn("Documentation for " .. slug .. " is already installed") end
+    log.debug("Documentation for " .. slug .. " is already installed")
   else
     local ui = vim.api.nvim_list_uis()
 
@@ -93,35 +89,30 @@ M.install = function(entry, verbose, is_update)
   end
 end
 
----@param args string[]
----@param verbose? boolean
----@param is_update? boolean
-M.install_args = function(args, verbose, is_update)
-  local updatable = list.get_updatable()
-  local registry = fs.read_registry()
+---@param slugs string[]
+M.install_args = function(slugs)
+  local registry = list.get_registry(true)
 
   if not registry then
-    if verbose then log.error("DevDocs registry not found, please run :DevdocsFetch") end
+    log.error("DevDocs registry not found, please run :DevdocsFetch")
     return
   end
 
-  for _, slug in ipairs(args) do
-    local data = {}
-
-    for _, entry in ipairs(registry) do
-      if entry.slug == slug then
-        data = entry
-        break
-      end
-    end
-
-    if vim.tbl_isempty(data) then
-      log.error("No documentation available for " .. arg)
+  for _, slug in ipairs(slugs) do
+    local registry_entry = vim.tbl_get(registry, slug)
+    if not registry_entry then
+      log.error("No documentation available for " .. slug .. " (slug not found in registry)")
     else
-      if is_update and not vim.tbl_contains(updatable, arg) then
-        log.info(arg .. " documentation is already up to date")
+      if registry_entry.installed then
+        if not registry_entry.has_update then
+          log.warn(slug .. ": documentation is already installed and up to date")
+        else
+          log.info(slug .. ": Updating")
+          M.install(registry_entry, true)
+        end
       else
-        M.install(data, verbose, is_update)
+        log.info(slug .. ": Installing")
+        M.install(registry_entry, false)
       end
     end
   end

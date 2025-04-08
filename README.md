@@ -106,14 +106,13 @@ To use the documentations from nvim-devdocs, you need to install it by executing
 Available commands:
 
 - `DevdocsFetch`: Fetch DevDocs metadata.
-- `DevdocsInstall`: Install documentation, 0-n args.
+- `DevdocsInstall`: Install or update documentation, 0-n args.
 - `DevdocsUninstall`: Uninstall documentation, 0-n args.
 - `DevdocsOpen`: Open documentation in a normal buffer, 0 or 1 arg.
 - `DevdocsOpenFloat`: Open documentation in a floating window, 0 or 1 arg.
 - `DevdocsOpenCurrent`: Open documentation for the current filetype in a normal buffer.
 - `DevdocsOpenCurrentFloat`: Open documentation for the current filetype in a floating window.
 - `DevdocsToggle`: Toggle floating window.
-- `DevdocsUpdate`: Update documentation, 0-n args.
 - `DevdocsUpdateAll`: Update all documentations.
 
 Commands support completion, and the Telescope picker will be used when no argument is provided.

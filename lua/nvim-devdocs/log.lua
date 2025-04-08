@@ -1,5 +1,7 @@
 local M = {}
 
+local config = require("nvim-devdocs.config")
+
 local log = require("plenary.log").new({
   plugin = "nvim-devdocs",
   use_console = false, -- use vim.notify instead
@@ -18,7 +20,7 @@ local notify = vim.schedule_wrap(
 )
 
 M.debug = function(message)
-  notify(message, vim.log.levels.DEBUG)
+  if config.options.debug then notify(message, vim.log.levels.DEBUG) end
   log.debug(message)
 end
 

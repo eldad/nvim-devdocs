@@ -15,7 +15,7 @@ M.install_doc = function(args)
   if vim.tbl_isempty(args.fargs) then
     pickers.installation_picker()
   else
-    operations.install_args(args.fargs, true)
+    operations.install_args(args.fargs)
   end
 end
 
@@ -70,21 +70,13 @@ M.open_doc_current_file = function(float)
   end
 end
 
-M.update = function(args)
-  if vim.tbl_isempty(args.fargs) then
-    pickers.update_picker()
-  else
-    operations.install_args(args.fargs, true, true)
-  end
-end
-
 M.update_all = function()
   local updatable = list.get_updatable()
 
   if vim.tbl_isempty(updatable) then
     log.info("All documentations are up to date")
   else
-    operations.install_args(updatable, true, true)
+    operations.install_args(updatable)
   end
 end
 
@@ -117,15 +109,18 @@ end
 M.setup = function(opts)
   config.setup(opts)
 
-  vim.defer_fn(function()
-    log.debug("Installing required docs")
-    operations.install_args(config.options.ensure_installed)
-  end, 3000)
+  log.debug("Startup")
+  if config.options.auto_install_on_startup then
+    vim.defer_fn(function()
+      log.debug("Installing required docs")
+      operations.install_args(config.options.ensure_installed)
+    end, 3000)
+  end
 
   local cmd = vim.api.nvim_create_user_command
 
   cmd("DevdocsFetch", M.fetch_registry, {})
-  cmd("DevdocsInstall", M.install_doc, { nargs = "*", complete = completion.get_non_installed })
+  cmd("DevdocsInstall", M.install_doc, { nargs = "*", complete = completion.get_all })
   cmd("DevdocsUninstall", M.uninstall_doc, { nargs = "*", complete = completion.get_installed })
   cmd("DevdocsOpen", M.open_doc, { nargs = "?", complete = completion.get_installed })
   cmd("DevdocsSearch", M.open_search, { nargs = "?", complete = completion.get_installed })
@@ -133,7 +128,6 @@ M.setup = function(opts)
   cmd("DevdocsOpenCurrent", function() M.open_doc_current_file() end, {})
   cmd("DevdocsOpenCurrentFloat", function() M.open_doc_current_file(true) end, {})
   cmd("DevdocsKeywordprg", M.keywordprg, { nargs = "?" })
-  cmd("DevdocsUpdate", M.update, { nargs = "*", complete = completion.get_updatable })
   cmd("DevdocsUpdateAll", M.update_all, {})
   cmd("DevdocsToggle", M.toggle, {})
 
