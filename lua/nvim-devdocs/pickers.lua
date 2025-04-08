@@ -97,8 +97,9 @@ local function open_doc(selection, float)
   local lines = plugin_state.get("preview_lines") or operations.read_entry(selection.value)
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
 
-  plugin_state.set("last_mode", float and "float" or "normal")
-  operations.open(selection.value, bufnr, float)
+  local mode = float and "float" or "normal"
+  plugin_state.set("last_mode", mode)
+  operations.open(selection.value, bufnr, mode)
 end
 
 M.installation_picker = function()

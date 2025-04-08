@@ -241,13 +241,12 @@ end
 
 ---@param entry DocEntry
 ---@param bufnr number
----@param float boolean
-M.open = function(entry, bufnr, float)
+---@param mode string
+M.open = function(entry, bufnr, mode)
   vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
+  vim.api.nvim_buf_set_name(bufnr, "[DevDocs: " .. entry.name .. "]")
 
-  if not float then
-    vim.api.nvim_set_current_buf(bufnr)
-  else
+  if mode == "float" then
     local win = nil
     local last_win = state.get("last_win")
     local float_opts = config.get_float_options()
@@ -265,6 +264,12 @@ M.open = function(entry, bufnr, float)
     vim.wo[win].nu = false
     vim.wo[win].relativenumber = false
     vim.wo[win].conceallevel = 3
+  elseif mode == "replace" then
+    -- TODO: this currently not in use
+    vim.api.nvim_set_current_buf(bufnr)
+  else
+    -- TODO: add split configuration to plugin settings
+    vim.api.nvim_open_win(bufnr, true, { split = "right", win = 0 })
   end
 
   local ignore = vim.tbl_contains(config.options.cmd_ignore, entry.alias)
@@ -285,7 +290,7 @@ end
 ---@param keyword string
 M.keywordprg = function(keyword)
   local alias = state.get("current_doc")
-  local float = state.get("last_mode") == "float"
+  local mode = state.get("last_mode")
   local bufnr = vim.api.nvim_create_buf(false, false)
   local entries = list.get_doc_entries({ alias })
   local entry
@@ -295,7 +300,7 @@ M.keywordprg = function(keyword)
     vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, filtered_lines)
     vim.bo[bufnr].modifiable = false
 
-    M.open(entry, bufnr, float)
+    M.open(entry, bufnr, mode)
   end
 
   for _, value in pairs(entries or {}) do
