@@ -4,7 +4,7 @@
 ---@field name string
 ---@field slug string
 ---@field type string
----@field version number
+---@field version string
 ---@field release string
 ---@field mtime number
 ---@field db_size number
@@ -13,6 +13,8 @@
 ---Extra fields
 ---@field installed boolean
 ---@field has_update boolean
+---@field versions string
+---@field all_versions table
 
 ---Represents an entry in the index.json file
 ---NOTE: alias and next_path are filled at runtime

@@ -128,19 +128,20 @@ M.installation_latest_picker = function()
     return
   end
 
+  ---@type table<RegistryEntry>
   local filtered_registry = {}
   for _, entry in ipairs(registry) do
     local current = vim.tbl_get(filtered_registry, entry.name)
     if not current then
-      entry.versions = { entry.version }
+      entry.all_versions = { entry.version }
       filtered_registry[entry.name] = entry
     else
-      local versions = current.versions
+      local versions = current.all_versions
       table.insert(versions, entry.version)
       -- nil version usually means the unified dataset
       if entry.version ~= nil and semver.gt(entry.version, current.version) then
         --
-        entry.versions = versions
+        entry.all_versions = versions
         filtered_registry[entry.name] = entry
       end
     end
@@ -150,10 +151,12 @@ M.installation_latest_picker = function()
   local iregistry = {}
   for _, entry in pairs(filtered_registry) do
     local versions = vim.tbl_filter(
-      function(v) return v ~= nil and v ~= entry.version end,
-      entry.versions
+      function(v) return v ~= nil and v ~= entry.version and v ~= "" end,
+      entry.all_versions
     )
-    entry.versions = table.concat(versions, ", ")
+    entry.all_versions = nil -- suppress in display
+    if #versions > 0 then entry.versions = table.concat(versions, ", ") end
+
     table.insert(iregistry, entry)
   end
 
