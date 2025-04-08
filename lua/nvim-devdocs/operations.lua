@@ -273,6 +273,9 @@ M.open = function(entry, bufnr, mode)
 
     if last_win and vim.api.nvim_win_is_valid(last_win) then
       vim.api.nvim_win_set_buf(last_win, bufnr)
+      local tabpage = vim.api.nvim_win_get_tabpage(last_win)
+      vim.api.nvim_set_current_tabpage(tabpage)
+      vim.api.nvim_set_current_win(last_win)
     else
       local winnr = vim.api.nvim_open_win(bufnr, true, { split = "right", win = 0 })
       state.set("last_win", winnr)
