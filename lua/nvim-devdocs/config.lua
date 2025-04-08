@@ -27,6 +27,7 @@ local default = {
   after_open = function(bufnr) end,
   debug = false,
   auto_install_on_startup = false,
+  keywordprg_search_fallback = false,
 }
 
 ---@class nvim_devdocs.Config

@@ -8,6 +8,7 @@ local operations = require("nvim-devdocs.operations")
 local config = require("nvim-devdocs.config")
 local completion = require("nvim-devdocs.completion")
 local filetypes = require("nvim-devdocs.filetypes")
+local interactions = require("nvim-devdocs.interactions")
 
 M.fetch_registry = operations.fetch
 
@@ -46,10 +47,7 @@ M.open_search = function(args, float)
   if vim.tbl_isempty(args.fargs) then
     log.warn("No search arg providered")
   else
-    local search_text = args.fargs[1]
-    local installed = list.get_installed_alias()
-    local entries = list.get_doc_entries(installed)
-    pickers.open_picker(entries or {}, float, { default_text = search_text })
+    interactions.open_search(args.fargs[1], float)
   end
 end
 
@@ -101,7 +99,7 @@ M.keywordprg = function(args)
   local keyword = args.fargs[1]
 
   if keyword then
-    operations.keywordprg(keyword)
+    interactions.keywordprg(keyword)
   else
     log.error("No keyword provided")
   end
