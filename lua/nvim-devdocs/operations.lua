@@ -239,12 +239,36 @@ M.render_cmd = function(bufnr, is_picker)
   previewer:start()
 end
 
+---@param s string
+local function regexescape(s) return vim.fn.escape(s, "[](){}+?.|^$&\\*=") end
+
+---@param buf_name string
+local function get_buf_by_exact_name(buf_name)
+  local bufnr = vim.fn.bufnr("^" .. regexescape(buf_name) .. "$")
+  if bufnr == -1 then return nil end
+  return bufnr
+end
+
 ---@param entry DocEntry
 ---@param bufnr number
 ---@param mode string
 M.open = function(entry, bufnr, mode)
+  local buf_name = "[DevDocs: " .. entry.name .. "]"
+
+  -- avoid buffer name collison
+  local existing_bufnr = get_buf_by_exact_name(buf_name)
+  if existing_bufnr then
+    local buftype = vim.api.nvim_buf_get_option(existing_bufnr, "buftype")
+    if buftype ~= "nofile" then
+      error("Cannot replace existing buffer (" .. tostring(existing_bufnr) .. ") " .. buf_name)
+    end
+    vim.api.nvim_buf_delete(existing_bufnr, {})
+
+    log.debug("operations.open: buffer deleted" .. tostring(existing_bufnr))
+  end
+
+  vim.api.nvim_buf_set_name(bufnr, buf_name)
   vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
-  vim.api.nvim_buf_set_name(bufnr, "[DevDocs: " .. entry.name .. "]")
 
   if mode == "float" then
     local win = nil
